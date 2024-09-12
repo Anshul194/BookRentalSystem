@@ -6,9 +6,12 @@ import { getBookByName ,getAllBooks,getBooksByRentRangeService,addBook,filterBoo
 export const createBook = async (req, res) => {
     try {
       const book = await addBook(req.body);
-      res.status(201).json(book);
+      res.status(201).json({message:'book created successfully',
+        book,
+        success:true
+    });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.message ,success:false});
     }
   };
   
@@ -16,9 +19,11 @@ export const createBook = async (req, res) => {
   export const fetchAllBooks = async (req, res) => {
     try {
       const books = await getAllBooks();
-      res.status(200).json(books);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(200).json({message:'book list fetched successfully',
+        books,
+        success:true
+    });    } catch (error) {
+      res.status(500).json({ message: error.message,success:false });
     }
   };
 
@@ -64,9 +69,9 @@ catch(error){
             return res.status(404).json({ message: 'No books found within this rent range' });
         }
 
-        res.status(200).json(books);
+        res.status(200).json({message:'Book found in given range',books,success:true});
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message ,success:false});
     }
 };
   

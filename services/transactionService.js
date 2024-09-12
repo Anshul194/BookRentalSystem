@@ -27,8 +27,13 @@ export const issueBookService = async (bookId, userId, issueDate) => {
 };
 
 // Service to return a book and calculate rent
- export const returnBookService = async (bookId, userId, returnDate) => {
+export const returnBookService = async (bookId, userId, returnDate) => {
     try {
+        // Ensure returnDate is a valid date string
+        if (!returnDate || isNaN(new Date(returnDate).getTime())) {
+            throw new Error('Invalid return date');
+        }
+
         // Find the transaction record for the issued book
         const transaction = await Transaction.findOne({
             bookId,
@@ -44,14 +49,30 @@ export const issueBookService = async (bookId, userId, issueDate) => {
         const issueDate = new Date(transaction.issueDate);
         const returnDateObj = new Date(returnDate);
 
+        // Ensure issueDate and returnDate are valid dates
+        if (isNaN(issueDate.getTime()) || isNaN(returnDateObj.getTime())) {
+            throw new Error('Invalid issue date or return date');
+        }
+
+        // Calculate days rented
         const daysRented = Math.ceil((returnDateObj - issueDate) / (1000 * 60 * 60 * 24));
+
+        // Fetch the book to get the rent per day
         const book = await Book.findById(bookId);
 
         if (!book) throw new Error('Book not found');
 
-        const totalRent = daysRented * book.rentPerDay;
+        // Ensure rentPerDay is a valid number
+        const rentPerDay = parseFloat(book.rentPerDay);
+        if (isNaN(rentPerDay)) {
+            throw new Error('Invalid rent per day for the book');
+        }
+
+        // Calculate total rent
+        const totalRent = daysRented * rentPerDay;
         transaction.totalRent = totalRent;
 
+        // Save the transaction with the updated return date and total rent
         await transaction.save();
         return transaction;
     } catch (error) {
