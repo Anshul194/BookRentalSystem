@@ -1,6 +1,25 @@
 import express from 'express'
 import Book from '../models/books.js'
 
+
+export const addBook = async (bookData) => {
+    try {
+      const book = new Book(bookData);
+      return await book.save();
+    } catch (error) {
+      throw new Error('Error adding book: ' + error.message);
+    }
+  };
+  
+  // Fetch all books
+  export const getAllBooks = async () => {
+    try {
+      return await Book.find({});
+    } catch (error) {
+      throw new Error('Error fetching books: ' + error.message);
+    }
+  };
+
 export const getBookByName= async(name)=>{
     try {
         const books = await Book.find({ bookName: { $regex: name, $options: 'i' } });

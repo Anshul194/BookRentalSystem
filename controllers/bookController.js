@@ -1,6 +1,26 @@
 import express from 'express'
-import { getBookByName } from '../services/bookService.js';
+import { getBookByName ,getAllBooks,getBooksByRentRangeService,addBook,filterBooksService} from '../services/bookService.js';
 
+
+
+export const createBook = async (req, res) => {
+    try {
+      const book = await addBook(req.body);
+      res.status(201).json(book);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  // Fetch all books
+  export const fetchAllBooks = async (req, res) => {
+    try {
+      const books = await getAllBooks();
+      res.status(200).json(books);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 //- book name or a term in the name of the book
 export const bookSearchByName = async (req, res) => {
@@ -52,8 +72,7 @@ catch(error){
   
 
 
-export 
-const filterBooks = async (req, res) => {
+export const filterBooks = async (req, res) => {
     try {
         const { category, name, minRent, maxRent } = req.query;
 
